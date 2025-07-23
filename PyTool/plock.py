@@ -4,6 +4,8 @@
 
 import multiprocessing
 from collections import OrderedDict
+import os
+from filelock import FileLock
 
 class KeyPLock:
     """
@@ -16,9 +18,7 @@ class KeyPLock:
         
         @param lock_dir: 文件锁存储目录，默认为./pylocks
         """
-        import os
-        from filelock import FileLock
-        
+
         # 创建锁目录(如果不存在)
         os.makedirs(lock_dir, exist_ok=True)
         self.lock_dir = lock_dir
