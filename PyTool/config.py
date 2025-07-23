@@ -20,6 +20,8 @@ class Cfg:
     - 线程安全的配置操作
     - 自动维护配置文件格式
     """
+    __defalut_key = "defalut_key"
+
     
     def __init__(self, cfg_path: str):
         """
@@ -76,7 +78,7 @@ class Cfg:
             self.__t_lock.release()
 
 
-    def encrypt(self, data: str, key: str) -> str:
+    def encrypt(self, data: str, key: str = __defalut_key) -> str:
         """
         使用简单异或算法加密数据
         
@@ -95,7 +97,7 @@ class Cfg:
             encrypted.append(encrypted_c)
         return ''.join(encrypted).encode('utf-8').hex()
 
-    def decrypt(self, encrypted_hex: str, key: str) -> str:
+    def decrypt(self, encrypted_hex: str, key: str = __defalut_key) -> str:
         """
         解密使用encrypt方法加密的数据
         
@@ -129,12 +131,12 @@ if __name__ == "__main__":
     test_key = "fasddfjkdfjskf"
     
     # 加密测试
-    encrypted = cfg.encrypt(test_data, test_key)
+    encrypted = cfg.encrypt(test_data)
     print(f"加密前: {test_data}")
     print(f"加密后(hex): {encrypted}")
     
     # 解密测试
-    decrypted = cfg.decrypt(encrypted, test_key)
+    decrypted = cfg.decrypt(encrypted)
     print(f"解密后: {decrypted}")
     
     # 验证解密结果是否与原始数据一致

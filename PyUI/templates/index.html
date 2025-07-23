@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>员工管理系统</title>
+    <!-- 锁定Element UI和Vue版本 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .form-container {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ebeef5;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h1 style="text-align: center; margin-bottom: 30px;">员工管理系统</h1>
+        
+        <!-- 数据展示表格 -->
+        <el-table :data="employees" border style="width: 100%">
+            <el-table-column prop="id" label="ID" width="80"></el-table-column>
+            <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+            <el-table-column prop="age" label="年龄" width="80"></el-table-column>
+            <el-table-column prop="position" label="职位"></el-table-column>
+        </el-table>
+
+        <!-- 数据提交表单 -->
+        <div class="form-container">
+            <h3>添加新员工</h3>
+            <el-form :model="newEmployee" label-width="80px">
+                <el-form-item label="姓名" required>
+                    <el-input v-model="newEmployee.name" placeholder="请输入姓名"></el-input>
+                </el-form-item>
+                <el-form-item label="年龄" required>
+                    <el-input-number v-model="newEmployee.age" :min="18" :max="60"></el-input-number>
+                </el-form-item>
+                <el-form-item label="职位" required>
+                    <el-input v-model="newEmployee.position" placeholder="请输入职位"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm">提交</el-button>
+                    <el-button @click="resetForm">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    employees: [],
+                    newEmployee: {
+                        name: '',
+                        age: 25,
+                        position: ''
+                    }
+                }
+            },
+            mounted() {
+                this.fetchEmployees();
+            },
+            methods: {
+                // 获取员工数据
+                fetchEmployees() {
+                    axios.get('/api/employees')
+                        .then(response => {
+                            if (response.data.success) {
+                                this.employees = response.data.data;
+                            }
+                        })
+                        .catch(error => {
+                            this.$message.error('获取数据失败');
+                            console.error(error);
+                        });
+                },
+                
+                // 提交表单
+                submitForm() {
+                    if (!this.validateForm()) {
+                        return;
+                    }
+                    
+                    axios.post('/api/employees', this.newEmployee)
+                        .then(response => {
+                            if (response.data.success) {
+                                this.$message.success(response.data.message);
+                                this.fetchEmployees(); // 刷新数据
+                                this.resetForm(); // 重置表单
+                            }
+                        })
+                        .catch(error => {
+                            this.$message.error('提交失败');
+                            console.error(error);
+                        });
+                },
+                
+                // 表单验证
+                validateForm() {
+                    if (!this.newEmployee.name) {
+                        this.$message.warning('请输入姓名');
+                        return false;
+                    }
+                    if (!this.newEmployee.position) {
+                        this.$message.warning('请输入职位');
+                        return false;
+                    }
+                    return true;
+                },
+                
+                // 重置表单
+                resetForm() {
+                    this.newEmployee = {
+                        name: '',
+                        age: 25,
+                        position: ''
+                    };
+                }
+            }
+        });
+    </script>
+</body>
+</html>
