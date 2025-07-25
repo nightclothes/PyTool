@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交易信息 - PyUI</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #e6f7ff, #f0f9ff);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(to right, #1890ff, #40a9ff);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-text {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .el-button--primary {
+            background-color: #1890ff;
+            border-color: #1890ff;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        .el-button--primary:hover {
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7.5 12h9m-9 3h9m-9-6h9m1.5-5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-16a2 2 0 0 1-2-2v-14a2 2 0 0 1 2-2h2m5.66 0a1 1 0 0 1 .66.76l1.04 4.24h-3.4l1.04-4.24a1 1 0 0 1 .66-.76h2z" />
+                </svg>
+                <span class="logo-text">PyUI - 交易信息</span>
+            </div>
+            <div>
+                <span v-if="isLoggedIn">欢迎, {{ currentUser.username }} | </span>
+                <el-button type="text" @click="logout" style="color: white;">退出登录</el-button>
+            </div>
+        </div>
+        <div class="container">
+            <div style="margin-top: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h2>交易信息列表</h2>
+                <el-button type="primary" @click="showAddDialog = true">添加新交易</el-button>
+            </div>
+            <el-table :data="trades" style="width: 100%" border>
+                <el-table-column prop="symbol" label="股票代码" width="120"></el-table-column>
+                <el-table-column prop="quantity" label="数量" width="80"></el-table-column>
+                <el-table-column prop="price" label="价格" width="100"></el-table-column>
+                <el-table-column prop="total" label="总金额" width="120"></el-table-column>
+                <el-table-column prop="date" label="日期" width="120"></el-table-column>
+                <el-table-column prop="type" label="类型" width="80">
+                    <template slot-scope="scope">
+                        <el-tag :type="scope.row.type === 'buy' ? 'success' : 'danger'">{{ scope.row.type === 'buy' ? '买入' : '卖出' }}</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="status" label="状态" width="100">
+                    <template slot-scope="scope">
+                        <el-tag :type="scope.row.status === 'completed' ? 'success' : 'warning'">{{ scope.row.status === 'completed' ? '已完成' : '待处理' }}</el-tag>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <!-- 添加交易对话框 -->
+            <el-dialog title="添加新交易" :visible.sync="showAddDialog" width="500px">
+                <el-form :model="newTrade" :rules="tradeRules" ref="tradeForm" label-width="100px">
+                    <el-form-item label="股票代码" prop="symbol">
+                        <el-input v-model="newTrade.symbol"></el-input>
+                    </el-form-item>
+                    <el-form-item label="数量" prop="quantity">
+                        <el-input-number v-model="newTrade.quantity" :min="1"></el-input-number>
+                    </el-form-item>
+                    <el-form-item label="价格" prop="price">
+                        <el-input-number v-model="newTrade.price" :min="0.01" :precision="2"></el-input-number>
+                    </el-form-item>
+                    <el-form-item label="类型" prop="type">
+                        <el-radio-group v-model="newTrade.type">
+                            <el-radio label="buy">买入</el-radio>
+                            <el-radio label="sell">卖出</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer">
+                    <el-button @click="showAddDialog = false">取消</el-button>
+                    <el-button type="primary" @click="handleAddTrade" :loading="addTradeLoading">确认添加</el-button>
+                </span>
+            </el-dialog>
+        </div>
+    </div>
+    <script>
+        // 设置axios支持会话cookie
+        axios.defaults.withCredentials = true;
+        
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    isLoggedIn: true, // 假设已登录，因为后端会处理未登录情况
+                    currentUser: {},
+                    trades: [],
+                    showAddDialog: false,
+                    addTradeLoading: false,
+                    newTrade: {
+                        symbol: '',
+                        quantity: 1,
+                        price: 0.01,
+                        type: 'buy'
+                    },
+                    tradeRules: {
+                        symbol: [
+                            { required: true, message: '请输入股票代码', trigger: 'blur' }
+                        ],
+                        quantity: [
+                            { required: true, message: '请输入数量', trigger: 'blur' },
+                            { type: 'number', min: 1, message: '数量必须大于0', trigger: 'blur' }
+                        ],
+                        price: [
+                            { required: true, message: '请输入价格', trigger: 'blur' },
+                            { type: 'number', min: 0.01, message: '价格必须大于0', trigger: 'blur' }
+                        ],
+                        type: [
+                            { required: true, message: '请选择交易类型', trigger: 'change' }
+                        ]
+                    }
+                }
+            },
+            mounted() {
+                this.fetchUserInfo();
+                this.fetchTrades();
+            },
+            methods: {
+                fetchUserInfo() {
+                    axios.get('/api/user/user')
+                        .then(response => {
+                            if (response.data.success) {
+                                this.currentUser = response.data.data;
+                            }
+                        })
+                        .catch(error => {
+                            this.$message.error('获取用户信息失败：' + error.message);
+                        });
+                },
+                logout() {
+                    axios.post('/api/user/logout')
+                        .then(response => {
+                            if (response.data.success) {
+                                this.$message.success('已退出登录');
+                                this.isLoggedIn = false;
+                                window.location.href = '/';
+                            }
+                        })
+                        .catch(error => {
+                            this.$message.error('退出登录失败：' + error.message);
+                        });
+                },
+                fetchTrades() {
+                    axios.get('/api/trade/trades')
+                        .then(response => {
+                            if (response.data.success) {
+                                this.trades = response.data.data;
+                            }
+                        })
+                        .catch(error => {
+                            this.$message.error('获取交易数据失败：' + error.message);
+                        });
+                },
+                handleAddTrade() {
+                    this.$refs.tradeForm.validate(valid => {
+                        if (!valid) return;
+                        this.addTradeLoading = true;
+                        axios.post('/api/trade/trades', this.newTrade)
+                            .then(response => {
+                                if (response.data.success) {
+                                    this.$message.success('交易添加成功');
+                                    this.showAddDialog = false;
+                                    this.newTrade = { symbol: '', quantity: 1, price: 0.01, type: 'buy' };
+                                    this.fetchTrades(); // 刷新交易列表
+                                } else {
+                                    this.$message.error(response.data.message);
+                                }
+                            })
+                            .catch(error => {
+                                this.$message.error('添加交易失败：' + (error.response?.data?.message || error.message || '网络错误'));
+                            })
+                            .finally(() => {
+                                this.addTradeLoading = false;
+                            });
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
