@@ -6,7 +6,7 @@ import os
 import sys
 
 import pydumpling
-from .logger import Logger
+from logger import Logger
 
 
 class Dumper:

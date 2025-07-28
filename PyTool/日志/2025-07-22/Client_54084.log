@@ -1,0 +1,10 @@
+[2025-07-22 10:58:54][pcom.py][54084][11920][Client_54084][__init__][60][INFO]连接到地址: tcp://localhost:5555
+[2025-07-22 10:58:54][pcom.py][54084][11920][Client_54084][start][76][INFO]通信服务已启动
+[2025-07-22 10:58:54][pcom.py][54084][34232][Client_54084][__send_loop][142][DEBUG]发送数据: {'msg': 'client hello 0'}
+[2025-07-22 10:58:54][pcom.py][54084][49252][Client_54084][__receive_loop][166][DEBUG]接收数据: {'msg': 'server hello 0'}
+[2025-07-22 10:58:54][pcom.py][54084][49252][Client_54084][__receive_loop][166][DEBUG]接收数据: {'msg': 'server hello 1'}
+[2025-07-22 10:58:55][pcom.py][54084][34232][Client_54084][__send_loop][142][DEBUG]发送数据: {'msg': 'client hello 1'}
+[2025-07-22 10:58:55][pcom.py][54084][49252][Client_54084][__receive_loop][166][DEBUG]接收数据: {'msg': 'server hello 2'}
+[2025-07-22 10:58:56][pcom.py][54084][34232][Client_54084][__send_loop][142][DEBUG]发送数据: {'msg': 'client hello 2'}
+[2025-07-22 10:59:02][pcom.py][54084][49252][Client_54084][__receive_loop][173][ERROR]接收数据失败: not a socket
+[2025-07-22 10:59:02][pcom.py][54084][11920][Client_54084][stop][89][INFO]通信服务已停止

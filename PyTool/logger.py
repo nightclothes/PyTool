@@ -36,8 +36,7 @@ class Logger:
             filename=logger_path,
             mode="a",  # 追加模式
             encoding="utf-8",
-            delay=False,
-            errors=None
+            delay=False
         )
         file_handler.setLevel(logging.DEBUG)
 
@@ -74,7 +73,7 @@ class Logger:
         return new_logger
 
     @staticmethod
-    def __get_father_directory(abspath: str | None = None) -> str:
+    def __get_father_directory(abspath = None) -> str:
         """
         获取指定路径的父目录
 

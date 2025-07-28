@@ -1,0 +1,4 @@
+[2025-07-22 10:53:41][pcom.py][50616][54760][Server_50616][__init__][56][INFO]绑定地址: tcp://localhost:5555
+[2025-07-22 10:53:41][pcom.py][50616][54760][Server_50616][start][76][INFO]通信服务已启动
+[2025-07-22 10:53:42][pcom.py][50616][34232][Server_50616][__send_loop][142][DEBUG]发送数据: {'msg': 'server hello 0'}
+[2025-07-22 10:53:42][pcom.py][50616][31908][Server_50616][__receive_loop][166][DEBUG]接收数据: {'msg': 'client hello 0'}

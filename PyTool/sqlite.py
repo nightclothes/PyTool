@@ -85,10 +85,11 @@ class SqliteMgr:
         确保在对象销毁时释放所有锁资源
         避免资源泄漏
         """
-        if self.__p_lock.is_locked:
-            self.__p_lock.release()
-        if self.__t_lock.locked():
-            self.__t_lock.release()
+        try:
+            if hasattr(self, '_SqliteMgr__p_lock') and self.__p_lock.is_locked:
+                self.__p_lock.release()
+        except Exception:
+            pass  # 忽略析构时的异常
         
 
 

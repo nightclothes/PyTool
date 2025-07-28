@@ -7,7 +7,7 @@ import subprocess
 import re
 import platform
 
-def find_pro(name_or_pid:str|int)->bool:
+def find_pro(name_or_pid)->bool:
     """
     检查指定名称或PID的进程是否正在运行
     
@@ -59,7 +59,7 @@ def start_exe(exe_path: str, args: list = None) -> bool:
     except Exception as e:
         return False
 
-def terminate_exe(name_or_pid: str|int) -> bool:
+def terminate_exe(name_or_pid) -> bool:
     """
     终止指定的exe进程，但不会终止自身进程
     
@@ -98,7 +98,7 @@ def terminate_exe(name_or_pid: str|int) -> bool:
         return False
 
 
-def ping(host:str = "www.baidu.com", count:int=4)->float|None:
+def ping(host = "www.baidu.com", count=4):
     """
     执行ping命令并返回平均延迟（毫秒）
     :param host: 目标主机
@@ -113,7 +113,8 @@ def ping(host:str = "www.baidu.com", count:int=4)->float|None:
         
         # 解析输出获取平均延迟
         if 'Windows' in platform.system():
-            match = re.search(r'平均 = (\d+)ms', output)
+            # 支持中英文Windows系统
+            match = re.search(r'(?:平均|Average) = (\d+)ms', output) or re.search(r'Average = (\d+)ms', output)
         else:
             match = re.search(r'min/avg/max/mdev = [\d.]+/([\d.]+)/[\d.]+/[\d.]+ ms', output)
         

@@ -89,6 +89,8 @@ class Cfg:
         返回:
             加密后的字符串(hex格式)
         """
+        if not data:
+            return data
         encrypted = []
         key_len = len(key)
         for i, c in enumerate(data):
@@ -111,6 +113,8 @@ class Cfg:
         异常:
             ValueError: 如果输入不是有效的hex字符串
         """
+        if not encrypted_hex:
+            return encrypted_hex
         try:
             encrypted = bytes.fromhex(encrypted_hex).decode('utf-8')
             decrypted = []
