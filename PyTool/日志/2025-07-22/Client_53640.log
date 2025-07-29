@@ -1,4 +1,0 @@
-[2025-07-22 10:53:42][pcom.py][53640][9960][Client_53640][__init__][60][INFO]连接到地址: tcp://localhost:5555
-[2025-07-22 10:53:42][pcom.py][53640][9960][Client_53640][start][76][INFO]通信服务已启动
-[2025-07-22 10:53:42][pcom.py][53640][47176][Client_53640][__send_loop][142][DEBUG]发送数据: {'msg': 'client hello 0'}
-[2025-07-22 10:53:42][pcom.py][53640][52464][Client_53640][__receive_loop][166][DEBUG]接收数据: {'msg': 'server hello 0'}
