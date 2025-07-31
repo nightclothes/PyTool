@@ -40,7 +40,6 @@ class KeyPLock:
         
         @param key: 虚拟地址作为唯一标识
         """
-        from filelock import FileLock
         with self._lock:
             if key not in self._cache:
                 lock_file = f"{self.lock_dir}/{key}.lock"

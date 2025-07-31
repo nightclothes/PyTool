@@ -31,7 +31,7 @@ class SqliteMgr:
             __p_lock: FileLock对象，用于进程间同步
         """
         self.__t_lock = threading.Lock()  # 线程锁 - 用于同一进程内的线程同步
-        self.__db_path = Path(db_path).absolute()  # 转换为绝对路径
+        self.__db_path = str(Path(db_path).absolute())  # 转换为绝对路径
         self.__p_lock = FileLock(f"{self.__db_path}.lock")  # 进程锁 - 使用文件锁实现跨进程同步
 
         # 数据库优化配置
