@@ -62,7 +62,8 @@ class SqliteMgr:
         - 自动清理: 启用自动清理WAL文件
         """
         with self.__p_lock, self.__t_lock:
-            conn = self._get_con()
+            # 使用无事务隔离级别的连接进行优化设置
+            conn = sqlite3.connect(str(self.__db_path), isolation_level=None)
             cursor = conn.cursor()
             # 设置WAL日志模式(提高并发性能)
             cursor.execute("PRAGMA journal_mode=WAL")
@@ -76,7 +77,6 @@ class SqliteMgr:
             cursor.execute("PRAGMA page_size=4096")
             # 启用自动清理WAL文件
             cursor.execute("PRAGMA wal_autocheckpoint=100")
-            conn.commit()
             conn.close()
 
     def __del__(self):
